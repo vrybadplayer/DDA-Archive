@@ -1,0 +1,55 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+SET LINESIZE 120
+SET PAGESIZE 30
+
+SET HEADING OFF
+SET RECSEP OFF
+SET NEWPAGE 1
+BREAK ON REPORT
+CLEAR SCREEN
+
+TTITLE 'Purchase Order Items &v_PurchaseOrderID'
+
+COLUMN PO_ID HEADING 'Purchase Order ID' FORMAT A20
+COLUMN PO_IT HEADING 'Item ID' FORMAT A25
+COLUMN POItemName HEADING 'Item Name' FORMAT A20
+COLUMN Quantity HEADING 'Quantity' FORMAT 99999
+COLUMN Price FORMAT $999990.99
+COLUMN Total_Price HEADING 'Total_Price' FORMAT $9999990.99
+
+SET HEADING ON
+
+PROMPT
+ACCEPT v_PurchaseOrderID CHAR FORMAT 'A10' PROMPT 'Enter Purchase Order ID (Format: ####) in between 1001 to 1016 : '
+
+COMPUTE SUM OF Total_Price ON REPORT PRINT "Total Amount:" 
+
+SELECT DISTINCT
+        o.PurchaseOrderID AS PO_ID,
+   	i.POItemID AS PO_IT,
+        i.POItemName,
+        i.Price,
+        i.Quantity,
+        i.Price * i.Quantity AS Total_Price
+FROM
+        Supplier s
+        JOIN PurchaseOrder o ON s.SupplierID = o.SupplierID
+        JOIN POItem i ON o.PurchaseOrderID = i.PurchaseOrderID
+WHERE
+        i.PurchaseOrderID = &v_PurchaseOrderID
+        AND i.Quantity IS NOT NULL
+        AND i.POItemName IS NOT NULL
+GROUP BY
+        o.PurchaseOrderID,
+	i.POItemID,	
+        s.SupplierID,
+        i.POItemName,
+        i.Quantity,
+        i.Price;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

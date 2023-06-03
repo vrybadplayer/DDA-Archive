@@ -1,0 +1,46 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+SET LINESIZE 120
+SET PAGESIZE 30
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This query shows the quantity sold for each product by a specific supplier.
+PROMPT
+
+TTITLE LEFT 'Supplier Name Available' SKIP 1 -
+	 LEFT '-------------------------------------------------' SKIP 2
+SELECT SupplierName 
+FROM Supplier
+WHERE SupplierID BETWEEN 1001 AND 1005 
+
+ACCEPT supplier_name PROMPT 'Enter the name of the supplier:'
+DEFINE supplier_name = '&supplier_name'
+
+TTITLE LEFT 'Total Quantity Sold for Each Product of Supplier' SKIP 1 -
+	 LEFT '-------------------------------------------------' SKIP 2
+
+COLUMN "ProductName" FORMAT A29 HEADING 'Product Name'
+COLUMN "TotalQuantitySold" FORMAT 9999999 HEADING 'Total Quantity Sold'
+
+SELECT  
+      qi.QuotationItemName AS "ProductName",
+      SUM(qi.Quantity) AS "TotalQuantitySold"
+FROM 
+      QuotationItem qi
+      JOIN Quotation q ON qi.QuotationID = q.QuotationID
+      JOIN Supplier s ON q.SupplierID = s.SupplierID
+WHERE 
+      SupplierName = '&supplier_name'
+GROUP BY 
+      qi.QuotationItemName
+ORDER BY
+	SUM(qi.Quantity) DESC;
+
+TTITLE OFF
+SET LINESIZE 80
+SET PAGESIZE 14
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

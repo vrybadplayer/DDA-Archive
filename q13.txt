@@ -1,0 +1,37 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This report will tally up the branches and display the total profit for each state.
+PROMPT Using this information, the headquarter can make possible business changes.
+PROMPT The management team can make decisions such as to promote or to drop the branches in the state.
+PROMPT The output is ordered by total profit in descending order.
+PROMPT
+
+TTITLE LEFT '                 Combined total profit for respective states' SKIP 1 -
+       LEFT '             ---------------------------------------------------' SKIP 2
+
+COLUMN LocationID FORMAT A20 HEADING 'Location ID'
+COLUMN State FORMAT A25 HEADING 'State'
+COLUMN SUM FORMAT $99999990.99 HEADING 'Total Profit'
+COLUMN ManagerID FORMAT A15 HEADING 'Manager ID'
+COLUMN BranchCount HEADING 'Number of Branches'
+
+SELECT l.LocationID,
+	 l.State,
+	 COUNT(b.BranchID) as BranchCount,
+	 SUM(b.profit) AS SUM
+FROM Location l 
+JOIN Branch b ON l.LocationID = b.LocationID
+GROUP BY l.LocationID, l.State
+ORDER BY SUM DESC;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

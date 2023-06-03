@@ -1,0 +1,39 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This Query will Show The Employee Information of (Input) Gender
+ACCEPT employee_gender PROMPT 'Enter Employee Gender (M for Male or F for Female): '
+DEFINE employee_gender = '&employee_gender';
+
+COLUMN EmployeeID FORMAT A11 HEADING 'Employee ID'
+COLUMN EmployeeFirstName FORMAT A15 HEADING 'E.First Name'
+COLUMN EmployeeLastName FORMAT A15 HEADING 'E.Last Name'
+COLUMN gender FORMAT A7 HEADING 'Gender'
+COLUMN BranchID FORMAT A10 HEADING 'Branch ID'
+COLUMN Region FORMAT A20 HEADING 'Region'
+COLUMN Country FORMAT A10 HEADING 'Country'
+
+set linesize 120
+set pagesize 30
+CLEAR SCREEN 
+TTITLE LEFT 'Employee Information of &employee_gender Gender' SKIP 1 - 
+LEFT '--------------------------------------------------------------------------------------------------------------' SKIP 2
+
+SELECT e.EmployeeID, e.EmployeeFirstName, e.EmployeeLastName, e.gender, b.BranchID, l.Region, l.Country
+FROM Employee e
+JOIN Branch b ON e.BranchID = b.BranchID
+JOIN Location l ON b.LocationID = l.LocationID
+WHERE e.gender = '&employee_gender'
+ORDER BY e.EmployeeID;
+
+TTITLE OFF
+SET HEADING ON 
+SET RECSEP WRAPPED 
+CLEAR BREAKS 
+CLEAR COLUMNS

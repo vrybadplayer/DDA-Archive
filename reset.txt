@@ -1,0 +1,13 @@
+Drop table QuotationItem;
+Drop table Quotation;
+Drop table POItem;
+Drop table PurchaseOrder;
+Drop table PrItem;
+Drop table PurchaseRequest;
+Drop table Supplier;
+Drop table DeliveryOrder;
+Drop table BranchCourier;
+Drop table CourierService;
+Drop table Employee;
+Drop table Branch;
+Drop table Location;

@@ -1,0 +1,130 @@
+CREATE TABLE Location (
+	LocationID varchar(10) NOT NULL,
+	State varchar(50),
+	Region varchar(50),
+	Country varchar(50),
+	PRIMARY KEY (LocationID)
+);
+
+CREATE TABLE Branch (
+	BranchID varchar(10) NOT NULL,
+	LocationID varchar(10) NOT NULL,
+	OpenTime varchar(5),
+	CloseTime varchar(5),
+	Profit number(7,2),
+	PRIMARY KEY (BranchID),
+	FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
+);
+
+CREATE TABLE Employee (
+	EmployeeID varchar(10) NOT NULL,
+	ManagerID varchar(10) NOT NULL,
+	EmployeeFirstName varchar(20),
+	EmployeeLastName varchar(20),
+	Salary number(7,2),
+	Gender varchar(1),
+	Age int,
+	BranchID varchar(10) NOT NULL,
+	PRIMARY KEY (EmployeeID),
+	FOREIGN KEY (BranchID) REFERENCES Branch(BranchID)
+);
+
+CREATE TABLE CourierService (
+	CourierID varchar(10) NOT NULL,
+	CourierName varchar(30),
+	PhoneNumber varchar(12), 
+	Address varchar(255),
+	PRIMARY KEY (CourierID)
+);
+
+
+CREATE TABLE BranchCourier (
+	BranchID varchar(10) NOT NULL,
+	CourierID varchar(10) NOT NULL,
+	ContractDuration int,
+	Availability varchar(1),
+PRIMARY KEY (BranchID, CourierID),
+FOREIGN KEY (BranchID) REFERENCES Branch(BranchID),
+FOREIGN KEY (CourierID) REFERENCES CourierService(CourierID)
+);
+
+CREATE TABLE DeliveryOrder (
+	DeliveryOrderID varchar(10) NOT NULL,
+	CourierID varchar(10) NOT NULL,
+	DeliveryTime varchar(5),
+	PickupTime varchar(5),
+	PRIMARY KEY (DeliveryOrderID),
+	FOREIGN KEY (CourierID) REFERENCES CourierService(CourierID)
+);
+
+CREATE TABLE Supplier (
+	SupplierID varchar(10) NOT NULL,
+	DeliveryOrderID varchar(10) NOT NULL,
+	SupplierName varchar(50),
+	ContractDuration int,
+	PRIMARY KEY (SupplierID),
+	FOREIGN KEY (DeliveryOrderID) REFERENCES DeliveryOrder(DeliveryOrderID)
+);
+
+CREATE TABLE PurchaseRequest (
+	PurchaseRequestID varchar(10) NOT NULL,
+	BranchID varchar(10) NOT NULL,
+	Approval varchar(1),
+	RequestDate date,
+	PRIMARY KEY (PurchaseRequestID),
+	FOREIGN KEY (BranchID) REFERENCES Branch(BranchID)
+);
+
+
+
+CREATE TABLE PrItem (
+	PRItemID varchar(10) NOT NULL,
+	PurchaseRequestID varchar(10) NOT NULL,
+PRItemName varchar(50),
+Quantity int,
+Price number(7,2),
+PRIMARY KEY (PRItemID),
+FOREIGN KEY (PurchaseRequestID) REFERENCES PurchaseRequest(PurchaseRequestID)
+);
+
+CREATE TABLE PurchaseOrder (
+	PurchaseOrderID varchar(10) NOT NULL,
+PurchaseRequestID varchar(10) NOT NULL,
+	SupplierID varchar(10) NOT NULL,
+	Approval varchar(1),
+	OrderDate date,
+	PRIMARY KEY (PurchaseOrderID),
+	FOREIGN KEY (SupplierID) REFERENCES Supplier(SupplierID),
+FOREIGN KEY (PurchaseRequestID) REFERENCES PurchaseRequest(PurchaseRequestID)
+);
+
+CREATE TABLE POItem (
+	POItemID varchar(10) NOT NULL,
+PurchaseOrderID varchar(10) NOT NULL,
+	POItemName varchar(50),
+	Quantity int,
+	Price number(7,2),
+	PRIMARY KEY (POItemID),
+	FOREIGN KEY (PurchaseOrderID) REFERENCES PurchaseOrder(PurchaseOrderID)
+);
+
+CREATE TABLE Quotation (
+	QuotationID varchar(10) NOT NULL,
+	SupplierID varchar(10) NOT NULL,
+	Discount number(3,3),
+QuotationDate date,
+	PRIMARY KEY (QuotationID),
+	FOREIGN KEY (SupplierID) REFERENCES Supplier(SupplierID)
+);
+
+
+CREATE TABLE QuotationItem (
+	QuotationItemID varchar(10) NOT NULL,
+QuotationID varchar(10) NOT NULL,
+	QuotationItemName varchar(50),
+Quantity int,
+Price number(7,2),
+	PRIMARY KEY (QuotationItemID),
+	FOREIGN KEY (QuotationID) REFERENCES Quotation(QuotationID)
+);
+

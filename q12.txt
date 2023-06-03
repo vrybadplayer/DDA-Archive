@@ -1,0 +1,38 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+SET LINESIZE 120
+SET PAGESIZE 30 
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT Display how many times each courier service has cooperated with each branch.
+
+TTITLE LEFT '          Courier Service Cooperation with Each Branch' SKIP 2 -
+
+COLUMN Branch FORMAT A10 HEADING 'Branch ID'
+COLUMN CourierID FORMAT A15 HEADING 'Courier ID'
+COLUMN CourierName FORMAT A30 HEADING 'Courier Name'
+COLUMN CooperationCount FORMAT 999 HEADING 'Cooperation Count'
+
+SELECT
+    b.BranchID AS Branch,
+    cs.CourierID,
+    cs.CourierName,
+    COUNT(*) AS CooperationCount
+FROM
+    Branch b
+    JOIN BranchCourier bc ON b.branchID = bc.branchID
+    JOIN CourierService cs ON bc.CourierID = cs.CourierID
+    JOIN DeliveryOrder d ON cs.CourierID = d.CourierID
+GROUP BY
+    b.BranchID,
+    cs.CourierID,
+    cs.CourierName;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

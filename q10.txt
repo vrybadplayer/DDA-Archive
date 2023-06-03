@@ -1,0 +1,53 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+SET RECSEP OFF
+CLEAR SCREEN
+
+
+PROMPT This query is to show profits made by different branches at a specified location.
+PROMPT
+
+ACCEPT v_loc CHAR FORMAT 'A10' PROMPT 'Enter Location ID ( Format XXXX, ID range from 1001 to 1016 ): '
+
+COLUMN    report_date_col    NEW_VALUE  report_date
+
+SELECT    TO_CHAR ( SYSDATE
+   	 , 'DD-Mon-YYYY'
+   	 )    AS report_date_col
+FROM dual
+;
+
+TTITLE CENTER 'Profit Report by Branch and Location' SKIP 1 -
+  	 CENTER 'Location: ' &v_loc SKIP 1 -
+  	 CENTER 'Report Generated On: ' &report_date SKIP 1 -
+ 	CENTER '------------------------------------------------' SKIP 2 -
+
+BREAK ON State SKIP PAGE ON Region SKIP 1 ON Country SKIP 1
+
+COLUMN State FORMAT A20 HEADING 'State'
+COLUMN Region FORMAT A20 HEADING 'Region'
+COLUMN Country FORMAT A20 HEADING 'Country'
+COLUMN Branch_ID FORMAT A20 HEADING 'Branch ID'
+COLUMN Total_Profit FORMAT $9999990.99 HEADING 'Total Profit'
+
+SELECT DISTINCT l.State,
+ 	l.Region,    
+ 	l.Country,
+ 	b.BranchID AS Branch_ID,
+ 	SUM(b.Profit) AS Total_Profit
+FROM Branch b
+JOIN Location l ON b.LocationID = l.LocationID
+WHERE l.LocationID = &v_loc
+GROUP BY l.State, l.Region, l.Country, b.BranchID
+ORDER BY Total_Profit DESC;
+
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS
+

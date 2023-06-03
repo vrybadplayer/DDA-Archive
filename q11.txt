@@ -1,0 +1,43 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+set linesize 120
+set pagesize 30
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+ACCEPT discountmin PROMPT 'Enter the Min Discounted Price to search for in all Quotations: '
+ACCEPT discountmax PROMPT 'Enter the Max Discounted Price to search for in all Quotations: '
+
+DEFINE discountmin = &discountmin
+DEFINE discountmax = &discountmax
+
+SET LINESIZE 120
+SET PAGESIZE 30
+CLEAR SCREEN
+TTITLE LEFT '                                    Discounted Price of Quotation' SKIP 1 -
+LEFT '------------------------------------------------------------------------------------------------------' SKIP 2
+
+
+
+BREAK ON "Quotation ID" SKIP 1
+
+COLUMN "Quotation ID" FORMAT A15 HEADING 'Quotation ID'
+COLUMN "Quotation Item Name" FORMAT A20 HEADING 'Item Name'
+COLUMN "Discounted Price" FORMAT 999,999.99 HEADING 'Discounted Price (RM)'
+COLUMN "Total" FORMAT 999,999.99 HEADING 'Total Price After Discounts (RM)'
+
+SELECT q.QuotationID AS "Quotation ID",
+qi.QuotationItemName AS "Quotation Item Name",
+SUM(qi.Price * (1 - q.Discount)) AS "Discounted Price",
+qi.Quantity AS "Quantity",
+qi.Quantity * SUM(qi.Price * (1 - q.Discount)) AS "Total"
+FROM Quotation q
+JOIN QuotationItem qi ON q.QuotationID = qi.QuotationID
+GROUP BY q.QuotationID, qi.QuotationItemName, qi.Quantity
+HAVING SUM(qi.Price * (1 - q.Discount)) BETWEEN &discountmin and &discountmax;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

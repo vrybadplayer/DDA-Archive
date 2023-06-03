@@ -1,0 +1,48 @@
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+CLEAR SCREEN
+SET RECSEP OFF
+SET NEWPAGE 1
+
+PROMPT Find matching PO items and Quotation Items based on minimum price entered, then compare to see which of their prices has changed and the amount that has been changed.
+
+
+ACCEPT min_price PROMPT 'Enter minimum price to search for: '
+
+DEFINE min_price = &min_price
+
+TTITLE LEFT '                        Matching PO and Quotation Items' SKIP 1 -
+LEFT '---------------------------------------------------------------------------------' SKIP 2
+
+COLUMN "PO Item ID" FORMAT A10 HEADING 'PO ID'
+COLUMN "PO Item Name" FORMAT A20 HEADING 'Item Name'
+COLUMN "Quotation Item ID" FORMAT A10 HEADING 'Quotation ID'
+COLUMN "PO Item Price" FORMAT 999,999.99 HEADING 'PO Price'
+COLUMN "Quotation Item Price" FORMAT 999,999.99 HEADING 'Quotation Price'
+
+SELECT
+poi.POItemName AS "PO Item Name",
+qi.QuotationItemID AS "Quotation Item ID",
+poi.POItemID AS "PO Item ID",
+qi.Price AS "Quotation Item Price",
+poi.Price AS "PO Item Price",
+poi.Price - qi.Price AS "Difference"
+FROM PurchaseOrder po
+JOIN POItem poi ON po.PurchaseOrderID = poi.PurchaseOrderID
+JOIN Supplier s ON po.SupplierID = s.SupplierID
+JOIN Quotation q ON s.SupplierID = q.SupplierID
+JOIN QuotationItem qi ON q.QuotationID = qi.QuotationID
+AND poi.POItemName = qi.QuotationItemName
+AND poi.Price != qi.Price
+WHERE poi.Price >= &min_price;
+
+BREAK ON "Matching PO Item ID" SKIP PAGE
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

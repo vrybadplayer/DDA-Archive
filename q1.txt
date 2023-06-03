@@ -1,0 +1,36 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This report displays the available courier services used by the company.
+PROMPT The result displays the delivery time and pickup time to be compared.
+PROMPT If the management team thinks the courier is unefficient, they can choose to end the contract.
+PROMPT 
+
+TTITLE 	CENTER 'Courier Service'	SKIP 1 -
+            CENTER 'and Delivery Information' 	SKIP 1 -
+            CENTER '-------------------------------------------------' SKIP 2
+
+
+COLUMN couriername HEADING 'Courier Name' FORMAT A30
+COLUMN phonenumber HEADING 'Phone Number' FORMAT A15
+COLUMN deliverytime HEADING 'Delivery Time' FORMAT A20
+COLUMN pickuptime HEADING 'Pickup Time' FORMAT A20
+COLUMN contractduration HEADING 'Contract Duration (Years)' FORMAT 9999999
+
+SELECT c.couriername, b.contractduration, c.phonenumber, d.deliverytime, d.pickuptime
+FROM branchcourier b
+JOIN courierservice c ON b.courierid = c.courierid
+JOIN deliveryorder d ON c.courierid = d.courierid
+WHERE availability LIKE 'Y'
+ORDER BY couriername ASC;
+
+TTITLE OFF
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

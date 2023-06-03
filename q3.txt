@@ -1,0 +1,41 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+SET LINESIZE 120
+SET PAGESIZE 30 
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT Search for Information with the location and courier.
+
+TTITLE LEFT '                     	Information with the Location and Courier' SKIP 2 -
+
+COLUMN Branch FORMAT A10 HEADING 'Branch ID'
+COLUMN CourierID FORMAT A13 HEADING 'Courier ID'
+COLUMN CourierName FORMAT A25 HEADING 'Courier Name'
+COLUMN State FORMAT A20 HEADING 'State'
+COLUMN DeliveryTime FORMAT A13 HEADING 'Delivery Time'
+COLUMN PickUpTime FORMAT A12 HEADING 'Pick Up Time'
+
+SELECT DISTINCT
+   	 b.BranchID AS Branch,
+   	 c.CourierID AS CourierID,
+         c.CourierName AS CourierName,
+         l.State,
+         d.DeliveryTime,
+         d.PickUpTime
+FROM
+   	 Supplier s
+   	 JOIN DeliveryOrder d ON s.DeliveryOrderID = d.DeliveryOrderID
+   	 JOIN CourierService c ON d.CourierID = c.CourierID
+   	 JOIN BranchCourier bc ON c.CourierID = bc.CourierID
+   	 JOIN Branch b ON bc.BranchID = b.BranchID
+   	 JOIN Location l ON b.LocationID = l.LocationID
+   	 JOIN PurchaseOrder p ON s.SupplierID = p.SupplierID;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

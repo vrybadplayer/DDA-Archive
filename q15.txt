@@ -1,0 +1,37 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+SET LINESIZE 120
+SET PAGESIZE 30
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+TTITLE LEFT '             Top 5 Supplier Purchase Order Summary' 			SKIP 1 -
+	 LEFT '---------------------------------------------------------------' SKIP 2
+
+PROMPT This query shows the total number of purchase orders and total amount for each supplier.
+PROMPT
+
+COLUMN SupplierName FORMAT A30 HEADING 'Supplier Name'
+COLUMN Count FORMAT 999 HEADING 'Total Items Ordered'
+COLUMN Sum FORMAT $999,999.99 HEADING 'Total Amount'
+
+SELECT 
+      s.SupplierName,
+      COUNT(po.PurchaseOrderID) AS Count,
+      SUM( poi.Price) AS Sum
+FROM 
+      Supplier s
+      JOIN PurchaseOrder po ON s.SupplierID = po.SupplierID
+      JOIN POItem poi ON po.PurchaseOrderID = poi.PurchaseOrderID
+GROUP BY 
+      s.SupplierName
+ORDER BY 
+	Count DESC;
+
+TTITLE OFF
+SET LINESIZE 80
+SET PAGESIZE 14
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS

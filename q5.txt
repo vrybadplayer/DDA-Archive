@@ -1,0 +1,39 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This Query will Show The Employee Information who are less than the input range of age
+ACCEPT employee_age PROMPT 'Enter Employee age: '
+DEFINE employee_age = &employee_age;
+
+COLUMN EmployeeID FORMAT A11 HEADING 'Employee ID'
+COLUMN EmployeeFirstName FORMAT A15 HEADING 'E.First Name'
+COLUMN EmployeeLastName FORMAT A15 HEADING 'E.Last Name'
+COLUMN Age FORMAT number HEADING 'E.Age'
+COLUMN BranchID FORMAT A10 HEADING 'Branch ID'
+COLUMN Region FORMAT A20 HEADING 'Region'
+COLUMN Country FORMAT A10 HEADING 'Country'
+
+set linesize 120
+set pagesize 30
+CLEAR SCREEN 
+TTITLE LEFT 'Employee Information whom age are less than &employee_age' SKIP 1 - 
+LEFT '--------------------------------------------------------------------------------------------------------------' SKIP 2
+
+SELECT e.EmployeeID, e.EmployeeFirstName, e.EmployeeLastName, e.Age, b.BranchID, l.Region, l.Country
+FROM Employee e
+JOIN Branch b ON e.BranchID = b.BranchID
+JOIN Location l ON b.LocationID = l.LocationID
+WHERE e.Age <= &employee_age
+ORDER BY e.EmployeeID;
+
+TTITLE OFF
+SET HEADING ON 
+SET RECSEP WRAPPED 
+CLEAR BREAKS 
+CLEAR COLUMNS

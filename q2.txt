@@ -1,0 +1,36 @@
+﻿ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+
+CLEAR SCREEN
+
+PROMPT This report shows the contract duration of couriers that are less than [input] years.
+PROMPT With this information in hand, the management can extend the contract of the couriers.
+PROMPT Branch ID is selected because management team need to inform the couriers which branch's contract they want to extend.
+PROMPT 
+ACCEPT v_years number PROMPT 'Enter years: '
+
+
+
+TTITLE 	LEFT '              Courier contracts with'			SKIP 1 -
+            LEFT '                less than &v_years years' 		SKIP 1 -
+            LEFT '-------------------------------------------------' SKIP 2
+
+COLUMN branchid HEADING 'Branch ID'
+COLUMN contractduration HEADING 'Contract Duration (Years)'
+COLUMN phonenumber HEADING 'Phone Number'
+
+SELECT b.BranchID,
+	 bc.contractduration,
+	 cs.phonenumber
+FROM Branch b
+JOIN BranchCourier bc ON b.branchid = bc.branchid
+JOIN CourierService cs ON bc.courierid = cs.courierid
+WHERE contractduration < &v_years;
+
+TTITLE OFF
+CLEAR BREAKS
+CLEAR COLUMNS
+

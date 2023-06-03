@@ -1,0 +1,38 @@
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+set linesize 120
+set pagesize 30
+
+SET RECSEP OFF
+SET NEWPAGE 1
+CLEAR SCREEN
+
+PROMPT This query shows the managers who are managing more than (Insert amount) of employees.
+PROMPT
+ACCEPT employee_managed PROMPT 'Enter to search for number of employee managed: '
+DEFINE employee_managed = &employee_managed
+
+COLUMN ManagerID FORMAT A20 HEADING 'Manager ID'
+COLUMN EmployeeFirstName FORMAT A15 HEADING 'First Name'
+COLUMN EmployeeLastName FORMAT A15 HEADING 'Last Name'
+
+set linesize 120
+set pagesize 30
+CLEAR SCREEN
+TTITLE LEFT 'List of Managers' SKIP 1 -
+LEFT '---------------------------------------------------------------------------------------------------' SKIP 2
+
+SELECT e.ManagerID,
+COUNT(e.ManagerID) AS "Number Of Employee Managed",
+m.EmployeeFirstName, 
+m.EmployeeLastName
+FROM Employee e
+JOIN Employee m ON e.ManagerID = m.EmployeeID
+GROUP BY e.ManagerID, m.EmployeeFirstName, m.EmployeeLastName
+HAVING COUNT(*) > &employee_managed;
+
+TTITLE OFF
+SET HEADING ON
+SET RECSEP WRAPPED
+CLEAR BREAKS
+CLEAR COLUMNS
